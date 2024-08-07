@@ -19,4 +19,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\College.Core.Entities\College.Core.Entities.csproj" />
+  </ItemGroup>
+
 </Project>
