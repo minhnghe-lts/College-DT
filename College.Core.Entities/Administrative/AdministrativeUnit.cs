@@ -1,9 +1,12 @@
 ﻿using College.Commons;
+using System.ComponentModel.DataAnnotations;
 
 namespace College.Core.Entities
 {
-    public class AdministrativeUnit : BaseEntity
+    public class AdministrativeUnit
     {
+        [Key]
+        public string Id { get; set; }
         public string FullName { get; set; }
         public string FullNameEn { get; set; }
         public string ShortName { get; set; }
