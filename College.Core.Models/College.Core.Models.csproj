@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\College.Commons\College.Commons.csproj" />
+    <ProjectReference Include="..\College.Core.Entities\College.Core.Entities.csproj" />
   </ItemGroup>
 
 </Project>

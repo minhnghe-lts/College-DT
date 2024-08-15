@@ -22,17 +22,23 @@ namespace College.Core.Business.Implement
             try
             {
                 var getInterView = await _myDbContext.Interview.AsNoTracking()
-                    .Select(x => new InterviewModel
+                    .Select(item => new InterviewModel
                     {
-                        Id = x.Id,
-                        CandidateName = x.Candidate.FullName,
-                        Name = x.Name,
-                        Result = x.InterviewResult,
-                        ResultDescription = x.ResultDescription,
-                        FromTime = x.FromTime,
-                        ToTime = x.ToTime,
-                        MeetingRoomName = x.MeetingRoom.Name
+                        Id = item.Id,
+                        CandidateName = item.Candidate.FullName,
+                        CandidateId = item.Candidate.Id,
+                        MeetingRoomName = item.MeetingRoom.Name,
+                        MeetingRoomId = item.MeetingRoom.Id,
+                        Name = item.Name,
+                        Result = item.InterviewResult,
+                        ResultDescription = item.ResultDescription,
+                        FromTime = item.FromTime,
+                        ToTime = item.ToTime
                     }).ToListAsync();
+                if (!getInterView.Any()) 
+                {
+                    return null;                
+                }
                 return getInterView;
             }
             catch (Exception e)
@@ -45,9 +51,9 @@ namespace College.Core.Business.Implement
         {
             try
             {
-                if (id <= 0)
+                if (id <= 0 || id == null)
                 {
-                    throw new ArgumentException("id phải lớn hơn 0", nameof(id));
+                    throw new ArgumentException("id phải lớn hơn 0 hoặc khác null", nameof(id));
                 }
                 var GetInterView = await _myDbContext.Interview.AsNoTracking()
                     .Where(record => record.Id == id)
@@ -55,13 +61,19 @@ namespace College.Core.Business.Implement
                     {
                         Id = item.Id,
                         CandidateName = item.Candidate.FullName,
+                        CandidateId = item.Candidate.Id,
+                        MeetingRoomName = item.MeetingRoom.Name,
+                        MeetingRoomId = item.MeetingRoom.Id,
                         Name = item.Name,
                         Result = item.InterviewResult,
                         ResultDescription = item.ResultDescription,
                         FromTime = item.FromTime,
-                        ToTime = item.ToTime,
-                        MeetingRoomName = item.MeetingRoom.Name
+                        ToTime = item.ToTime
                     }).SingleOrDefaultAsync();
+                if (GetInterView == null)
+                {
+                    return null;
+                }
                 return GetInterView;
             }
             catch (Exception e)
@@ -113,7 +125,7 @@ namespace College.Core.Business.Implement
             }
             if (requestModel.id == null && requestModel.id <= 0)
             {
-                throw new ArgumentException("id không được null hoặc nhỏ hơn 0.", nameof(requestModel.Name));
+                throw new ArgumentException("id không được null hoặc nhỏ hơn 0.", nameof(requestModel.id));
             }
             if (string.IsNullOrWhiteSpace(requestModel.Name))
             {
@@ -176,7 +188,6 @@ namespace College.Core.Business.Implement
             }
             catch (ArgumentNullException ex)
             {
-                Console.WriteLine(ex.Message);
                 throw new Exception(ex.Message);
             }
         }
@@ -189,7 +200,7 @@ namespace College.Core.Business.Implement
                 {
                     throw new ArgumentException("Bạn không được phép thay đổi id", nameof(id));
                 }
-                var findInterview = await _myDbContext.Interview.FindAsync(requestModel.id);
+                var findInterview = await _myDbContext.Interview.AsNoTracking().FirstOrDefaultAsync(record => record.Id == id);
                 if (findInterview != null)
                 {
                     ValidateUpdateInterViewModel(requestModel);
@@ -281,17 +292,27 @@ namespace College.Core.Business.Implement
                                        .Where(c => ids.Contains(c.Id))
                                        .ToListAsync();
 
-                if (interviews.Any())
+                if (!interviews.Any())
                 {
-                    foreach (var item in interviews)
-                    {
-                        item.IsDeleted = true;
-                    }
-                    await _myDbContext.SaveChangesAsync();
-                    return true;
+                    throw new ArgumentException("Danh sách ID không hợp lệ hoặc không tồn tại bản ghi nào");
                 }
-                throw new ArgumentException("Danh sách lịch phỏng vấn của bạn sai rồi");
 
+                // Lấy các ID không tồn tại
+                var existingIds = interviews.Select(i => i.Id).ToHashSet();
+                var invalidIds = ids.Except(existingIds).ToList();
+
+                if (invalidIds.Any())
+                {
+                    throw new ArgumentException($"Các ID không tồn tại trong cơ sở dữ liệu: {string.Join(", ", invalidIds)}");
+                }
+
+                // Cập nhật trạng thái IsDeleted của các bản ghi
+                foreach (var item in interviews)
+                {
+                    item.IsDeleted = true;
+                }
+                await _myDbContext.SaveChangesAsync();
+                return true;
             }
             catch (Exception ex)
             {

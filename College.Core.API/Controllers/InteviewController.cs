@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace College.Core.API.Controllers
 {
-    [Route("api/interviews")]
+    [Route("[controller]")]
     [ApiController]
     public class InteviewController : ControllerBase
     {
@@ -21,6 +21,10 @@ namespace College.Core.API.Controllers
             try
             {
                 var result = await _interviewService.GetInterviewCalanders();
+                if (result == null)
+                {
+                    return NotFound();
+                }
                 return Ok(result);
             }catch (Exception ex)
             {

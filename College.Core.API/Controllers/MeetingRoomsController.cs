@@ -7,102 +7,111 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using College.Core.Entities;
 using College.Core.Infrastructure;
+using System.Reflection.Metadata;
+using College.Core.Business.Interface;
+using College.Core.Models.RequestModel;
 
 namespace College.Core.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class MeetingRoomsController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IMeetingRoomServices _meetingRoomServices;
 
-        public MeetingRoomsController(AppDbContext context)
+        public MeetingRoomsController(IMeetingRoomServices meetingRoomServices)
         {
-            _context = context;
+            _meetingRoomServices = meetingRoomServices;
         }
 
         // GET: api/MeetingRooms
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MeetingRoom>>> GetMeetingRoom()
         {
-            return await _context.MeetingRoom.ToListAsync();
+            try
+            {
+                var result = await _meetingRoomServices.GetMeetingRooms();
+                if (result == null) { return NotFound(); }
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception(ex.Message);
+            }
         }
 
         // GET: api/MeetingRooms/5
         [HttpGet("{id}")]
         public async Task<ActionResult<MeetingRoom>> GetMeetingRoom(long id)
         {
-            var meetingRoom = await _context.MeetingRoom.FindAsync(id);
-
-            if (meetingRoom == null)
+            try
             {
-                return NotFound();
+                var result = await _meetingRoomServices.GetMeetingRoom(id);
+                if (result == null) { return NotFound(); }
+                return Ok(result);
             }
+            catch (Exception ex)
+            {
 
-            return meetingRoom;
+                throw new Exception(ex.Message);
+            }
         }
 
         // PUT: api/MeetingRooms/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutMeetingRoom(long id, MeetingRoom meetingRoom)
+        public async Task<IActionResult> PutMeetingRoom(long id, UpdateMeetingRoom meetingRoom)
         {
             if (id != meetingRoom.Id)
             {
                 return BadRequest();
             }
-
-            _context.Entry(meetingRoom).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                var result = await _meetingRoomServices.UpdateMeettingRoom(meetingRoom);
+                if (result == null) { return NotFound(); }
+                return Ok(result);
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
-                if (!MeetingRoomExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                throw new Exception(ex.Message);
             }
-
-            return NoContent();
         }
 
         // POST: api/MeetingRooms
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<MeetingRoom>> PostMeetingRoom(MeetingRoom meetingRoom)
+        public async Task<ActionResult<MeetingRoom>> PostMeetingRoom(AddMeetinngRoom meetingRoom)
         {
-            _context.MeetingRoom.Add(meetingRoom);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetMeetingRoom", new { id = meetingRoom.Id }, meetingRoom);
+            try
+            {
+                var result = await _meetingRoomServices.AddMeettingRoom(meetingRoom);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
         // DELETE: api/MeetingRooms/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteMeetingRoom(long id)
+        public async Task<IActionResult> SoftDeleteMeetingRoom(long id)
         {
-            var meetingRoom = await _context.MeetingRoom.FindAsync(id);
-            if (meetingRoom == null)
+            try
             {
-                return NotFound();
+                var result = await _meetingRoomServices.SoftDelMeetingRoom(id);
+                if (result == null)
+                {
+                    return NotFound();
+                }
+                return Ok(result);
             }
-
-            _context.MeetingRoom.Remove(meetingRoom);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool MeetingRoomExists(long id)
-        {
-            return _context.MeetingRoom.Any(e => e.Id == id);
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
     }
 }

@@ -21,6 +21,8 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.ServiceRegister();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IInterviewService, InterviewService>();
+builder.Services.AddScoped<IMeetingRoomServices, MeetingRoomServices>();
+
 
 var app = builder.Build();
 app.UseDbMigration(app.Environment.IsDevelopment());
