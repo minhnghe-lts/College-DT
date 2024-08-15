@@ -6,6 +6,16 @@ namespace College.Core.Infrastructure
 {
     public class AppDbContext : DbContext
     {
+        public AppDbContext()
+        {
+                
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=College_DEV;Integrated Security=True;Trust Server Certificate=True");
+        }
+
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
         }

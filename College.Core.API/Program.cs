@@ -1,4 +1,6 @@
 using College.Core.API.Extensions;
+using College.Core.Business.Implement;
+using College.Core.Business.Interface;
 using College.Core.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,6 +20,7 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 builder.Services.AddHttpContextAccessor();
 builder.Services.ServiceRegister();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<IInterviewService, InterviewService>();
 
 var app = builder.Build();
 app.UseDbMigration(app.Environment.IsDevelopment());
