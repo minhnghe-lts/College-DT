@@ -19,5 +19,6 @@ namespace College.Core.Entities
         public long PositionId { get; set; }
         public virtual Position Position { get; set; }
         public DateTime? TerminationDate { get; set; }
+        public virtual ICollection<ContractAllowance> ContractAllowances { get; set; }
     }
 }

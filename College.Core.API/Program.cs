@@ -1,4 +1,5 @@
 using College.Core.API.Extensions;
+using College.Core.Business;
 using College.Core.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,6 +18,9 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
     );
 builder.Services.AddHttpContextAccessor();
 builder.Services.ServiceRegister();
+
+builder.Services.AddScoped<IContractService, ContractService>();
+
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();

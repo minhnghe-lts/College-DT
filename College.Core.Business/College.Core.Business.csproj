@@ -18,4 +18,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\College.Core.Infrastructure\College.Core.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>
