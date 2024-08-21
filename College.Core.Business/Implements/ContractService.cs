@@ -1,6 +1,7 @@
 ﻿using College.Core.Business;
 using College.Core.Entities;
 using College.Core.Infrastructure;
+using College.Core.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -186,41 +187,5 @@ namespace College.Core.Business
         //    }
         //    await _context.SaveChangesAsync();
         //}
-    }
-
-    public class CreateEditContractRequestModel
-    {
-        public long Id { get; set; }
-        public long EmployeeId { get; set; }
-        public long PositionId { get; set; }
-        public long DepartmentId { get; set; }
-        public EmployeeContractType employeeContractType { get; set; }
-        public decimal BaseSalary { get; set; }
-        public decimal PerformanceSalary { get; set; }
-        public List<ContractAllowanceReqModel> Allowances { get; set; }
-    }
-
-    public class ContractAllowanceReqModel
-    {
-        public long Id { get; set; }
-        public decimal Amount { get; set; }
-        public DateTime FromDate { get; set; }
-        public DateTime? ToDate { get; set; }
-    }
-
-    public class ContractResponseModel
-    {
-        public long Id { get; set; }
-        public long EmployeeId { get; set; }
-        public long PositionId { get; set; }
-        public long DepartmentId { get; set; }
-        public string EmployeeName { get; set; }
-        public string PositionName { get; set; }
-        public string DepartmentName { get; set; }
-        public EmployeeContractType EmployeeContractType { get; set; }
-        public DateTime FromDate { get; set; }
-        public DateTime ToDate { get; set; }
-
-
     }
 }
