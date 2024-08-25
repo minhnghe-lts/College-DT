@@ -1,4 +1,6 @@
 ﻿using College.Core.Models;
+using College.Core.Models.RequestModels;
+using College.Core.Models.ResponseModels.Contract;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,5 +18,9 @@ namespace College.Core.Business
         Task<List<ContractResponseModel>> FindContractByDepartmentId(long departmentId);
         Task<List<ContractResponseModel>> FindContractByDateRange(DateTime? fromDate, DateTime? toDate);
         //Task CreateEditContracts(CreateEditContractRequestModel input);
+        Task<List<FillDropPosition>> FillDropDowPosition();
+        Task<bool> DeteleContract(long contractId);
+        string ExportContract(long contractId);
+        Task<bool> CreateEditContracts(CreateEditContractRequestModel input);
     }
 }

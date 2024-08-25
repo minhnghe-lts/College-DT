@@ -8,9 +8,10 @@ namespace College.Core.Models
 {
     public class ContractAllowanceReqModel
     {
-        public long Id { get; set; }
+
+        public long AllowanceId { get; set; }
         public decimal Amount { get; set; }
         public DateTime FromDate { get; set; }
-        public DateTime? ToDate { get; set; }
+        public DateTime ToDate { get; set; }
     }
 }

@@ -12,7 +12,7 @@ namespace College.Core.Entities
         public DateTime ToDate { get; set; }
         public decimal BaseSalary { get; set; }
         public decimal PerformanceSalary { get; set; }
-        public long DeparmentId { get; set; }
+        public long DepartmentId { get; set; }
         public virtual Department Department { get; set; }
         public long SubjectId { get; set; }
         public virtual Subject Subject { get; set; }

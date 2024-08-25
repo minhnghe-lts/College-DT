@@ -10,9 +10,6 @@ namespace College.Core.Models
     public class ContractResponseModel
     {
         public long Id { get; set; }
-        public long EmployeeId { get; set; }
-        public long PositionId { get; set; }
-        public long DepartmentId { get; set; }
         public string EmployeeName { get; set; }
         public string PositionName { get; set; }
         public string DepartmentName { get; set; }

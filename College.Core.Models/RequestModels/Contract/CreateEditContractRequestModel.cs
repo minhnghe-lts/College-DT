@@ -16,6 +16,9 @@ namespace College.Core.Models
         public EmployeeContractType employeeContractType { get; set; }
         public decimal BaseSalary { get; set; }
         public decimal PerformanceSalary { get; set; }
+        public long SubjectId { get; set; }
+        public DateTime FromDate { get; set; }
+        public DateTime ToDate { get; set; }
         public List<ContractAllowanceReqModel> Allowances { get; set; }
     }
 }
