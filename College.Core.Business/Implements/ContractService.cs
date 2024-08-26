@@ -3,8 +3,10 @@ using College.Core.Entities;
 using College.Core.Infrastructure;
 using College.Core.Models;
 using College.Core.Models.RequestModels;
-using College.Core.Models.ResponseModels.Contract;
+using College.Core.Models.ResponseModels;
+using DocumentFormat.OpenXml.InkML;
 using DocumentFormat.OpenXml.Office.CustomUI;
+using DocumentFormat.OpenXml.Office2010.ExcelAc;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.EntityFrameworkCore;
@@ -241,11 +243,23 @@ namespace College.Core.Business
 
         public async Task<bool> CreateEditContracts(CreateEditContractRequestModel input)
         {
+            foreach(var allowanceReq in input.Allowances)
+            {
+                bool exists = await _context.Allowance.AnyAsync(item => item.Id == allowanceReq.AllowanceId && !item.IsDeleted);
+                if (!exists) 
+                {
+                    return false;
+                }
+            }
             try
             {
                 Contract contract;
                 if (input.Id <= 0)
                 {
+                    if(_context.Contract.Any(item => item.EmployeeId == input.EmployeeId))
+                    {
+                        return false;
+                    }
                     contract = new Contract
                     {
                         EmployeeId = input.EmployeeId,
@@ -260,34 +274,30 @@ namespace College.Core.Business
                     };
                     _context.Contract.Add(contract);
                     await _context.SaveChangesAsync();
-                        if (input.Allowances != null && input.Allowances.Any())
-                        {
-                            var contractAllowances = input.Allowances.Select(a => new ContractAllowance
-                            {
-                                ContractId = contract.Id, // Sử dụng ContractId vừa được tạo
-                                AllowanceId = a.AllowanceId,
-                                Amount = a.Amount,
-                                FromDate = a.FromDate,
-                                ToDate = a.ToDate
-                            }).ToList();
 
-                            _context.ContractAllowance.AddRange(contractAllowances);
-                            await _context.SaveChangesAsync();
-                        }
-                    else
+                    var contractAllowances = input.Allowances.Select(a => new ContractAllowance
                     {
-                        contract = _context.Contract
-                            /*.Include(contract => contract.ContractAllowances)*/
-                            .Where(record => record.Id == input.Id && record.IsDeleted == false).FirstOrDefault();
-                        if (contract == null)
-                        {
-                            return false;
-                        }
+                        ContractId = contract.Id,
+                        AllowanceId = a.AllowanceId,
+                        Amount = a.Amount,
+                        FromDate = a.FromDate,
+                        ToDate = a.ToDate
+                    }).ToList();
 
-                        _context.Contract.Update(contract);
-                    }
+                    _context.ContractAllowance.AddRange(contractAllowances);
                     await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    contract = _context.Contract
+                        .Where(record => record.Id == input.Id && record.IsDeleted == false).FirstOrDefault();
+                    if (contract == null)
+                    {
+                        return false;
+                    }
 
+                    _context.Contract.Update(contract);
+                    await _context.SaveChangesAsync();
                 }
             }
             catch (Exception ex)
@@ -296,6 +306,18 @@ namespace College.Core.Business
                 return false;
             }
             return true;
+        }
+        public async Task<List<FllDropEmployee>> FillDropEmployee()
+        {
+            var result = _context.Employee
+                .Where(employee => !employee.IsDeleted && employee.IsActive &&
+                !_context.Contract.Any(contract => contract.EmployeeId == employee.Id && contract.TerminationDate >= DateTime.Now))
+                .Select(employee => new FllDropEmployee()
+                {
+                    Id = employee.Id,
+                    name = employee.FullName,
+                }).ToList();
+            return result;
         }
     }
 }

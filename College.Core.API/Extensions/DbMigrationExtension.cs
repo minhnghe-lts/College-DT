@@ -12,6 +12,7 @@ namespace College.Core.API.Extensions
                 var context = serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
                 context.Database.Migrate();
                 SeedData.SeedAdministrative(context);
+                SeedData.SeedContract(context);
                 //if (isDevelopment)
                 //{
                 //    DataSeeding.DevelopmentSeeding(context);

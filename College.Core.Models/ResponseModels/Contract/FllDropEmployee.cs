@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace College.Core.Models.ResponseModels
 {
-    public class FillDropPosition
+    public class FllDropEmployee
     {
         public long Id { get; set; }
-        public string Name { get; set; }
+        public string name { get; set; }
     }
 }
